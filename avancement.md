@@ -14,7 +14,7 @@ veuillez cocher les seules cases qui correspondent aux étapes validées.
 
 - [ ] la création du socket UDP local et la construction de l'adresse du socket distant est correcte
 
-- [ ] l’envoi de  messages en utilisant l'appel système sendto (qui retourne une valeur >0 correspondant à la taille de chaque message envoyé) est fonctionnelle 
+- [ ] l’envoi de messages en utilisant l'appel système sendto (qui retourne une valeur >0 correspondant à la taille de chaque message envoyé) est fonctionnelle 
 
 - [ ] la réception côté puit (sur nc ou la version "enseignant" de tsock) des messages envoyés par votre client est correcte
 

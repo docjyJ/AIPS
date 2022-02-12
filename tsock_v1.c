@@ -19,65 +19,20 @@ données du réseau */
 #include <errno.h>
 
 #include "tsock_lib.h"
+#include "tsock_error.h"
 
-void error(char* error, char * cmd, int code){
-    printf("%s\nusage: %s [-p|-s][-n ##]\n", error, cmd);
-    exit(code);
-}
+const char hello[] = "Hello serv !";
 
-int main (int argc, char **argv)
-{
-	int c;
-	extern char *optarg;
-	extern int optind;
-    Status * status = newStatus();
-	while ((c = getopt(argc, argv, "pn:s")) != -1) {
-		switch (c) {
-            case 'p':
-                if (isSource(status))
-                    error("Too many argument! (-s with -p)", argv[0], 3);
-                setSink(status);
-                break;
-
-            case 's':
-                if (isSink(status))
-                    error("Too many argument! (-s with -p)", argv[0], 3);
-                setSource(status);
-                break;
-
-            case 'n':
-                setMessageNb(status, optind);
-                break;
-
-            case 'u':
-                setUdp(status);
-                break;
+int main (int argc, char **argv) {
+    Statue * s = parseParameter(argc, argv);
+    openConnexion(s);
 
 
-            case ':':
-                error("Missing argument!", argv[0], 2);
-                break;
+    sendto(s->socket, hello, strlen(hello),
+           MSG_CONFIRM, (const struct sockaddr *) &s->adresse,
+           sizeof(s->adresse));
 
-            case '?':
-                error("Unrecognized option!", argv[0], 1);
-                break;
-
-            default:
-                error("intern error!", argv[0], 42);
-                break;
-		}
-	}
-
-	if (isSource(status)-isSink(status)) {
-        if (isSource(status))
-            printf("on est dans le source\n");
-        else
-            printf("on est dans le puits\n");
-	}
-    else {
-        error("Missing argument! (-s or -p)", argv[0], 3);
-    }
-
+    closeConnexion(s);
     return 0;
 }
 

@@ -2,27 +2,20 @@
 #define AIPS_LIB_TSOCK_H
 
 typedef struct {
+    char * command;
+    int socket;
+    struct sockaddr_in adresse;
+    char * host;
+    int port;
     int messageNb;
+    int messageLength;
     unsigned char isSink : 1;
     unsigned char isSource : 1;
     unsigned char isUdp : 1;
-} Status;
+} Statue;
 
-Status * newStatus();
-
-void setMessageNb(Status * s, int nb);
-int getMessageNb(Status * s);
-
-void setTcp(Status * s);
-int isTcp(Status * s);
-
-void setUdp(Status * s);
-int isUdp(Status * s);
-
-void setSink(Status * s);
-int isSink(Status * s);
-
-void setSource(Status * s);
-int isSource(Status * s);
+Statue * parseParameter(int argc, char **argv);
+void openConnexion(Statue * s);
+void closeConnexion(Statue * s);
 
 #endif //AIPS_LIB_TSOCK_H
