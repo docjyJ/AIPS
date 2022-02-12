@@ -1,10 +1,12 @@
 #ifndef AIPS_TSOCK_ERROR_H
 #define AIPS_TSOCK_ERROR_H
 
-void usageError(char * cmd);
+void usage(char * cmd);
 
-void usageErrorDetailed(char * error, char * cmd);
+void errorDetailed(char * error, char * cmd);
 
-void ErrorDetailed(char * error, char * cmd);
+void error();
+
+void errorNetwork(char * cmd);
 
 #endif //AIPS_TSOCK_ERROR_H

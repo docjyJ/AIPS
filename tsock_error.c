@@ -1,8 +1,9 @@
 #include "tsock_error.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <netdb.h>
 
-const char usage[] = "Usage: %s -p [-options] port \n"
+const char usageTxt[] = "Usage: %s -p [-options] port \n"
                      "       %s -s [-options] host port \n"
                      "\n"
                      "Options communes:\n"
@@ -17,27 +18,22 @@ const char usage[] = "Usage: %s -p [-options] port \n"
                      "Options spécifiques au puits (-p) \n"
                      "       -n ## définit le nombre de réception (défaut: infini)\n"
                      "       -t ##définit la taille des buffers de réception du niveau transport (par défaut, celle du système\n";
-void printUsage(char * cmd){
-    fprintf(stderr, usage, cmd, cmd);
+
+void usage(char * cmd){
+    printf(usageTxt, cmd, cmd);
+    exit(EXIT_SUCCESS);
 }
 
-void printError(char * error, char * cmd){
+void errorDetailed(char * error, char * cmd){
     fprintf(stderr, "%s: %s\n", cmd, error);
+    exit(EXIT_FAILURE);
 }
 
-void usageError(char * cmd){
-    printUsage(cmd);
-    exit(1);
+void error(){
+    exit(EXIT_FAILURE);
 }
 
-void usageErrorDetailed(char * error, char * cmd){
-    printError(error, cmd);
-    printUsage(cmd);
-    exit(2);
-}
-
-void ErrorDetailed(char * error, char * cmd){
-    printError(error, cmd);
-    exit(3);
-
+void errorNetwork(char * cmd){
+    herror(cmd);
+    exit(EXIT_FAILURE);
 }
