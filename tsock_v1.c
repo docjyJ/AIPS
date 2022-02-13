@@ -28,9 +28,14 @@ typedef struct {
 
 int open(int isUdp, char* cmd){
     int s;
-    if (isUdp)
-        if((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    if (isUdp) {
+        if ((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
             errorNetworkP(cmd);
+    }
+    else {
+        if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+            errorNetworkP(cmd);
+    }
     return s;
 }
 
@@ -45,7 +50,7 @@ int main (int argc, char **argv) {
     long long value;
     int socket;
     struct sockaddr_in adresse;
-    memset(&adresse, 0, sizeof(adresse));
+    bzero(&adresse, sizeof(adresse));
     adresse.sin_family = AF_INET;
     Statue s;
     s.messageNb = 0;
@@ -140,21 +145,25 @@ int main (int argc, char **argv) {
         printf("SOURCE : lg_mesg_emis=%d, port=%d, nb_envois=%d, TP=%s, dest=%s\n",
                s.messageLength, (unsigned short) value, s.messageNb, s.isUdp?"UDP":"TCP", argv[optind]);
 
+        /* Connexion au serveur */
+        struct sockaddr *addAdresse = (struct sockaddr *) &adresse;
+        int lenAdresse = sizeof(struct sockaddr);
+        if(!s.isUdp){
+            if (connect(socket, addAdresse, lenAdresse))
+                errorNetworkP(argv[0]);
+        }
+
         /* Envoi des messages */
+        buffer = malloc((s.messageLength+1)*sizeof(char));
         for(i = 0; i < s.messageNb; i++) {
-            char message[s.messageLength+1];
-            sprintf(message, "%5d", i+1);
-            char motif = (char)(97 + i%26);
-            for (int j=5;j<s.messageLength;j++)
-                message[j] = motif;
-            message[s.messageLength] = 0;
+            sprintf(buffer, "%5d", i+1);
+            memset(buffer+5,(char)(97 + i%26),s.messageLength-5);
+            buffer[s.messageLength] = 0;
 
-            if(sendto(socket, message, s.messageLength,
-                      MSG_CONFIRM, (const struct sockaddr *) &adresse,
-                      sizeof(struct sockaddr)) != s.messageLength)
-                errorDetailed("fail to send data", argv[0]);
+            if(sendto(socket, buffer, s.messageLength, 0, addAdresse, lenAdresse) != s.messageLength)
+                errorNetworkP(argv[0]);
 
-            printf("SOURCE: Envoi n°%5d (%5d) [%s]\n", i+1, s.messageLength, message);
+            printf("SOURCE: Envoi n°%5d (%5d) [%s]\n", i+1, s.messageLength, buffer);
         }
 
         /* Fermeture du socket */
@@ -197,18 +206,29 @@ int main (int argc, char **argv) {
             printf("PUITS : lg_mesg=%d, port=%d, nb_receptions=infini, TP=%s\n",
                    s.messageLength, (unsigned short) value, s.isUdp?"UDP":"TCP");
 
-        /* Reception des messages */
+        /* Definition du client */
+        unsigned int clientLen = sizeof(struct sockaddr);
         struct sockaddr client;
-        value=sizeof(struct sockaddr);
-        long nb=0;
-        memset(&client, 0, value);
+        struct sockaddr *addClient = &client;
+        unsigned int *addClientLen = &clientLen;
+        bzero(addClient, value);
+        if(!s.isUdp){
+            if (listen(socket, 0))
+                errorNetworkP(argv[0]);
+
+            if (accept(socket, addClient, addClientLen) < 0)
+                errorNetworkP(argv[0]);
+
+            addClient = NULL;
+            clientLen = 0;
+        }
+
+        /* Envoi des messages */
         buffer = malloc((s.messageLength+1)*sizeof(char));
         i=0;
         while(!s.messageNb || i < s.messageNb){
-            nb = recvfrom(socket, buffer, s.messageLength,
-                          MSG_WAITALL, &client,
-                          (unsigned int *) &value);
-            buffer[nb] = '\0';
+            value = recvfrom(socket, buffer, s.messageLength, 0,  addClient,addClientLen);
+            buffer[value] = '\0';
             printf("PUITS: Envoi n°%5d (%5d) [%s]\n", i+1, (int) strlen(buffer), buffer);
             if(i>99997)
                 i=0;
@@ -220,9 +240,10 @@ int main (int argc, char **argv) {
         /* Fermeture du socket */
         close(socket);
     }
+
+    /* fin du programme */
     else
         errorDetailed("missing argument -s or -p option", argv[0]);
-
     return 0;
 }
 
