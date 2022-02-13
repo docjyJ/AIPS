@@ -4,20 +4,11 @@
 #include <netdb.h>
 
 const char usageTxt[] = "Usage: %s -p [-options] port \n"
-                     "       %s -s [-options] host port \n"
-                     "\n"
-                     "Options communes:\n"
-                     "       -uutilise le protocole UDP (défaut: TCP) \n"
-                     "       -l ##    longueur du tampon lu ou écrit (défaut: 30)\n"
-                     "\n"
-                     "Options spécifiques à la source (-s) \n"
-                     "       -d : Impose au service de transport TCP d'envoyer les données sans délai \n"
-                     "       -n ##    définit le nombre d'émission (défaut: 10)\n"
-                     "       -t ##définit la taille des buffer d'émission du niveau transport (par défaut, celle du système \n"
-                     "\n"
-                     "Options spécifiques au puits (-p) \n"
-                     "       -n ## définit le nombre de réception (défaut: infini)\n"
-                     "       -t ##définit la taille des buffers de réception du niveau transport (par défaut, celle du système\n";
+                        "       %s -s [-options] host port \n"
+                        "Options :\n"
+                        "  -u    : utilise le service du protocole UDP, par défaut, le protocole TCP est utilisé\n"
+                        "  -l ## : longueur (en octets) du message à émettre en émission ou longueur maximale du message à lire en réception (par défaut : 30)\n"
+                        "  -n ## : définit le nombre de messages soit à émettre pour la source (par défaut : 10), soit à lire pour le puits (par défaut : infini)\n";
 
 void usage(char * cmd){
     printf(usageTxt, cmd, cmd);
@@ -33,7 +24,12 @@ void error(){
     exit(EXIT_FAILURE);
 }
 
-void errorNetwork(char * cmd){
+void errorNetworkH(char * cmd){
     herror(cmd);
+    exit(EXIT_FAILURE);
+}
+
+void errorNetworkP(char * cmd){
+    perror(cmd);
     exit(EXIT_FAILURE);
 }

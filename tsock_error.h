@@ -7,6 +7,8 @@ void errorDetailed(char * error, char * cmd);
 
 void error();
 
-void errorNetwork(char * cmd);
+void errorNetworkH(char * cmd);
+
+void errorNetworkP(char * cmd);
 
 #endif //AIPS_TSOCK_ERROR_H

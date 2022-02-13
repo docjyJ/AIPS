@@ -24,9 +24,9 @@ veuillez cocher les seules cases qui correspondent aux étapes validées.
 
 - [X] la création du socket UDP local du puit et la construction de son adresse est correcte
 
-- [ ] la réception et l'affichage des messages reçus sont corrects
+- [X] la réception et l'affichage des messages reçus sont corrects
 
-- [ ] l'échange de messages tq décrits dans le cahier des charges entre vos versions source et puit de la version 1 de "tsock" est opérationnel
+- [X] l'échange de messages tq décrits dans le cahier des charges entre vos versions source et puit de la version 1 de "tsock" est opérationnel
 
 ## Avancement sur la version 2 de tsock
 La version 2 intègre l’utilisation de TCP pour l’échange des messages. Veuillez renseigner les étapes que vous avez traitées.  
@@ -47,7 +47,7 @@ La version v3 de tsock intègre les fonctions de formatage et d'affichage des me
 
 - [X] la prise en compte de l'option -n en émission aussi bien avec UDP et TCP est correcte
 
-- [ ] la prise en compte de l'option -n en réception avec UDP est correcte
+- [X] la prise en compte de l'option -n en réception avec UDP est correcte
 
 - [ ] la prise en compte de l'option -n en réception avec TCP est correcte
 
