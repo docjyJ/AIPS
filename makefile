@@ -1,15 +1,15 @@
-default : tsock_v1
+default : tsock
 
-all : tsock_v0 tsock_v1
+all : tsock debug
 
-tsock_v0: tsock_v0.o
-	gcc -Wall -o $@ $^
+debug: tsock.o tsock_error.o
+	gcc -Wall -g -o $@ $^
 
-tsock_v1: tsock_v1.o tsock_error.o
+tsock: tsock.o tsock_error.o
 	gcc -Wall -o $@ $^
 
 clean :
-	rm *.o tsock_v0 tsock_v1
+	rm *.o tsock debug
 
 %.o : %.c
 	gcc -Wall -c $<
